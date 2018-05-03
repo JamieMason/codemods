@@ -17,7 +17,8 @@ function sortPropsByName (a, b) {
 }
 
 function getPropNameForSort (prop) {
-  return prop.key ? prop.key.name : ''
+  // Allow both unquoted and quoted keys.
+  return prop.key && ( prop.key.name || prop.key.value ) || '';
 }
 
 function applySort (a, b) {
