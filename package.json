@@ -1,0 +1,21 @@
+{
+  "name": "codemods",
+  "description": "Transforms for use with JSCodeshift",
+  "version": "0.0.0",
+  "author": "Jamie Mason <jamie@foldleft.io> (https://github.com/JamieMason)",
+  "bugs": "https://github.com/JamieMason/codemods/issues",
+  "dependencies": {
+    "jscodeshift": "0.5.1"
+  },
+  "homepage": "https://github.com/JamieMason/codemods#readme",
+  "license": "MIT",
+  "private": true,
+  "repository": "JamieMason/codemods",
+  "scripts": {
+    "import-from-root": "jscodeshift --extensions js,jsx -t ./transforms/import-from-root.js",
+    "sort-jsx-props": "jscodeshift --extensions js,jsx -t ./transforms/sort-jsx-props.js",
+    "sort-object-props": "jscodeshift --extensions js,jsx -t ./transforms/sort-object-props.js",
+    "use-named-exports": "jscodeshift --extensions js,jsx -t ./transforms/use-named-exports.js",
+    "use-named-imports": "jscodeshift --extensions js,jsx -t ./transforms/use-named-imports.js"
+  }
+}

@@ -1,33 +1,96 @@
 # codemods
 
-This repository contains a collection of codemod scripts for use with
-[JSCodeshift](https://github.com/facebook/jscodeshift).
+A collection of transforms for use with
+[facebook/jscodeshift](https://github.com/facebook/jscodeshift).
 
-### Setup & Run
+## Installation
 
 ```sh
-npm install -g jscodeshift
 git clone https://github.com/JamieMason/codemods.git
-jscodeshift -t <codemod-script> <file>
+cd codemods
+yarn install
 ```
 
-Use the `-d` option for a dry-run and use `-p` to print the output for
-comparison.
+## Usage
 
-### Included Scripts
+```
+# yarn
+yarn name-of-the-transform <path-to-file>
 
-#### `sort-jsx-props`
+# npm
+npm run name-of-the-transform -- <path-to-file>
 
-Sort props of JSX `<Component />` in A-Z order.
-
-```sh
-jscodeshift -t codemods/transforms/sort-jsx-props.js <file>
+# jscodeshift
+jscodeshift -t ./transforms/name-of-the-transform.js <path-to-file>
 ```
 
-#### `sort-object-props`
+## Transforms
 
-Sort members of Object Literals in A-Z order.
+### import-from-root
 
-```sh
-jscodeshift -t codemods/transforms/sort-object-props.js <file>
+Rewrite deep imports to import from a packages' root index.
+
+> Set the Environment Variable `IMPORT_FROM_ROOT` to apply this transform only to packages whose
+> name starts with that string: `IMPORT_FROM_ROOT=some-package yarn import-from-root <path-to-file>`
+
+```js
+/* INPUT */
+import { foo } from 'some-package/foo/bar/baz';
+
+/* OUTPUT */
+import { foo } from 'some-package';
+```
+
+### sort-jsx-props
+
+Sort props of JSX Components alphabetically.
+
+```jsx
+/* INPUT */
+<Music zootWoman={true} rickJames={true} zapp={true} />
+
+/* OUTPUT */
+<Music rickJames={true} zapp={true} zootWoman={true} />
+```
+
+### sort-object-props
+
+Sort members of Object Literals alphabetically.
+
+```js
+/* INPUT */
+const players = { messi: true, bergkamp: true, ginola: true };
+
+/* OUTPUT */
+const players = { bergkamp: true, ginola: true, messi: true };
+```
+
+### use-named-exports
+
+Naively convert a default export to a named export using the name of the file, which may clash with
+other variable names in the file. This codemod would need following up on with ESLint and some
+manual fixes.
+
+```js
+/* INPUT */
+// ~/Dev/repo/src/apps/health/server.js
+export default mount('/health', app);
+
+/* OUTPUT */
+// ~/Dev/repo/src/apps/health/server.js
+export const server = mount('/health', app);
+```
+
+### use-named-imports
+
+Naively convert a default import to a named import using the original name, which may not match what
+the module is actually exporting. This codemod would need following up on with ESLint and some
+manual fixes.
+
+```js
+/* INPUT */
+import masthead from '@sky-uk/koa-masthead';
+
+/* OUTPUT */
+import { masthead } from '@sky-uk/koa-masthead';
 ```
