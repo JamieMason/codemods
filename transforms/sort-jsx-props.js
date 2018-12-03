@@ -1,30 +1,19 @@
-module.exports = function (file, api) {
-  var root = api.jscodeshift(file.source);
+export default (file, api) => {
+  const j = api.jscodeshift;
+  const getPropName = jsxAttribute => (jsxAttribute.name ? jsxAttribute.name.name : '...spread');
+  const sortByPropName = (a, b) => {
+    if (a < b) return -1;
+    if (a > b) return 1;
+    return 0;
+  };
 
-  root.find(api.jscodeshift.JSXOpeningElement)
-    .forEach(sortJSXProps);
-
-  return root.toSource();
+  return j(file.source)
+    .find(api.jscodeshift.JSXOpeningElement)
+    .forEach(path => {
+      const jSXOpeningElement = path.value;
+      jSXOpeningElement.attributes = jSXOpeningElement.attributes.sort((a, b) =>
+        sortByPropName(getPropName(a), getPropName(b))
+      );
+    })
+    .toSource();
 };
-
-function sortJSXProps (node) {
-  node.value.attributes = node.value.attributes.sort(sortJSXPropsByName);
-}
-
-function sortJSXPropsByName (a, b) {
-  return applySort(getPropNameForSort(a), getPropNameForSort(b));
-}
-
-function getPropNameForSort (attr) {
-  return attr.name ? attr.name.name : '...spread';
-}
-
-function applySort (a, b) {
-  if (a < b) {
-    return -1;
-  }
-  if (a > b) {
-    return 1;
-  }
-  return 0;
-}

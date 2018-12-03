@@ -1,32 +1,19 @@
-module.exports = function (file, api) {
-  var root = api.jscodeshift(file.source);
+export default (file, api) => {
+  const j = api.jscodeshift;
+  const getPropName = property => (property.key && (property.key.name || property.key.value)) || '';
+  const sortByPropName = (a, b) => {
+    if (a < b) return -1;
+    if (a > b) return 1;
+    return 0;
+  };
 
-  root
+  return j(file.source)
     .find(api.jscodeshift.ObjectExpression)
-    .forEach(sortProps);
-
-  return root.toSource();
+    .forEach(path => {
+      const objectExpression = path.value;
+      objectExpression.properties = objectExpression.properties.sort((a, b) =>
+        sortByPropName(getPropName(a), getPropName(b))
+      );
+    })
+    .toSource();
 };
-
-function sortProps (node) {
-	node.value.properties = node.value.properties.sort(sortPropsByName);
-}
-
-function sortPropsByName (a, b) {
-  return applySort(getPropNameForSort(a), getPropNameForSort(b));
-}
-
-function getPropNameForSort (prop) {
-  // Allow both unquoted and quoted keys.
-  return prop.key && ( prop.key.name || prop.key.value ) || '';
-}
-
-function applySort (a, b) {
-  if (a < b) {
-    return -1;
-  }
-  if (a > b) {
-    return 1;
-  }
-  return 0;
-}
