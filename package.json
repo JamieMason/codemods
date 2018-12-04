@@ -7,15 +7,20 @@
   "dependencies": {
     "jscodeshift": "0.5.1"
   },
+  "devDependencies": {
+    "babel-preset-env": "1.7.0",
+    "jest": "23.6.0"
+  },
   "homepage": "https://github.com/JamieMason/codemods#readme",
   "license": "MIT",
   "private": true,
   "repository": "JamieMason/codemods",
   "scripts": {
-    "import-from-root": "jscodeshift --extensions js,jsx -t ./transforms/import-from-root.js",
-    "sort-jsx-props": "jscodeshift --extensions js,jsx -t ./transforms/sort-jsx-props.js",
-    "sort-object-props": "jscodeshift --extensions js,jsx -t ./transforms/sort-object-props.js",
-    "use-named-exports": "jscodeshift --extensions js,jsx -t ./transforms/use-named-exports.js",
-    "use-named-imports": "jscodeshift --extensions js,jsx -t ./transforms/use-named-imports.js"
+    "import-from-root": "jscodeshift --parser flow --extensions js,jsx -t ./transforms/import-from-root.js",
+    "sort-jsx-props": "jscodeshift --parser flow --extensions js,jsx -t ./transforms/sort-jsx-props.js",
+    "sort-object-props": "jscodeshift --parser flow --extensions js,jsx -t ./transforms/sort-object-props.js",
+    "test": "jest",
+    "use-named-exports": "jscodeshift --parser flow --extensions js,jsx -t ./transforms/use-named-exports.js",
+    "use-named-imports": "jscodeshift --parser flow --extensions js,jsx -t ./transforms/use-named-imports.js"
   }
 }

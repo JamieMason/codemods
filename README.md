@@ -3,6 +3,19 @@
 A collection of transforms for use with
 [facebook/jscodeshift](https://github.com/facebook/jscodeshift).
 
+<div align="center">
+
+[![Gitter Chat for codemods](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/JamieMason/codemods)
+[![Donate via PayPal](https://img.shields.io/badge/donate-paypal-blue.svg)](https://www.paypal.me/foldleft)
+[![Analytics](https://ga-beacon.appspot.com/UA-45466560-5/codemods?flat&useReferer)](https://github.com/igrigorik/ga-beacon)
+[![Follow JamieMason on GitHub](https://img.shields.io/github/followers/JamieMason.svg?style=social&label=Follow)](https://github.com/JamieMason)
+[![Follow fold_left on Twitter](https://img.shields.io/twitter/follow/fold_left.svg?style=social&label=Follow)](https://twitter.com/fold_left)
+
+[Installation](#installation) | [Usage](#usage) | [Contributing](#contributing) |
+[Transforms](#transforms) | [Quick Intro To Making A Codemod](#quick-intro-to-making-a-codemod)
+
+</div>
+
 ## Installation
 
 ```sh
@@ -23,6 +36,14 @@ npm run name-of-the-transform -- <path-to-file>
 # jscodeshift
 jscodeshift -t ./transforms/name-of-the-transform.js <path-to-file>
 ```
+
+## Contributing
+
+Transforms can be created at `./transforms/<transform-name>.js` and tested by adding example input
+files at `./test/fixtures/<transform-name>/<scenario-name>.input.js` with the corresponding expected
+output alongside it at `./test/fixtures/<transform-name>/<scenario-name>.output.js`.
+
+All fixtures are discovered and tested when running `yarn test`.
 
 ## Transforms
 
