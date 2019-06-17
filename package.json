@@ -9,7 +9,7 @@
   },
   "devDependencies": {
     "babel-preset-env": "1.7.0",
-    "jest": "23.6.0"
+    "jest": "24.8.0"
   },
   "homepage": "https://github.com/JamieMason/codemods#readme",
   "license": "MIT",
