@@ -5,7 +5,7 @@
   "author": "Jamie Mason <jamie@foldleft.io> (https://github.com/JamieMason)",
   "bugs": "https://github.com/JamieMason/codemods/issues",
   "dependencies": {
-    "jscodeshift": "0.5.1"
+    "jscodeshift": "0.6.4"
   },
   "devDependencies": {
     "babel-preset-env": "1.7.0",
