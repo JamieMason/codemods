@@ -5,16 +5,19 @@
   "author": "Jamie Mason <jamie@foldleft.io> (https://github.com/JamieMason)",
   "bugs": "https://github.com/JamieMason/codemods/issues",
   "dependencies": {
-    "jscodeshift": "0.5.1"
+    "jscodeshift": "0.6.4"
   },
   "devDependencies": {
     "babel-preset-env": "1.7.0",
-    "jest": "23.6.0"
+    "jest": "24.8.0"
   },
   "homepage": "https://github.com/JamieMason/codemods#readme",
   "license": "MIT",
   "private": true,
   "repository": "JamieMason/codemods",
+  "resolutions": {
+    "lodash": ">=4.17.15"
+  },
   "scripts": {
     "import-from-root": "jscodeshift --parser flow --extensions js,jsx -t ./transforms/import-from-root.js",
     "sort-jsx-props": "jscodeshift --parser flow --extensions js,jsx -t ./transforms/sort-jsx-props.js",
