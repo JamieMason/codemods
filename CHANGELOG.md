@@ -1,4 +1,11 @@
-## 0.7.1 (2019-08-01)
+## [0.8.1](https://github.com/JamieMason/codemods/compare/0.7.1...0.8.1) (2019-08-01)
+
+### Features
+
+- **react:** ignore spread elements when sorting props
+  ([1ad03c9](https://github.com/JamieMason/codemods/commit/1ad03c9))
+
+## [0.7.1](https://github.com/JamieMason/codemods/compare/01a2944...0.7.1) (2019-08-01)
 
 ### Bug Fixes
 
