@@ -39,6 +39,19 @@ All fixtures are discovered and tested when running `yarn test`.
 
 ## 📝 API
 
+### add-react-import
+
+Import React if it is missing from a file which uses JSX.
+
+```jsx
+/* INPUT */
+export const Component = () => <div />
+
+/* OUTPUT */
+import React from "react";
+export const Component = () => <div />
+```
+
 ### import-from-root
 
 Rewrite deep imports to import from a packages' root index.

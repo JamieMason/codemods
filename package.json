@@ -19,6 +19,7 @@
     "lodash": ">=4.17.15"
   },
   "scripts": {
+    "add-react-import": "jscodeshift --parser flow --extensions js,jsx -t ./transforms/add-react-import.js",
     "import-from-root": "jscodeshift --parser flow --extensions js,jsx -t ./transforms/import-from-root.js",
     "sort-jsx-props": "jscodeshift --parser flow --extensions js,jsx -t ./transforms/sort-jsx-props.js",
     "sort-object-props": "jscodeshift --parser flow --extensions js,jsx -t ./transforms/sort-object-props.js",
