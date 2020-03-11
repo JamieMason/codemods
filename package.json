@@ -5,11 +5,11 @@
   "author": "Jamie Mason <jamie@foldleft.io> (https://github.com/JamieMason)",
   "bugs": "https://github.com/JamieMason/codemods/issues",
   "dependencies": {
-    "jscodeshift": "0.6.4"
+    "jscodeshift": "0.7.0"
   },
   "devDependencies": {
     "babel-preset-env": "1.7.0",
-    "jest": "24.8.0"
+    "jest": "25.1.0"
   },
   "homepage": "https://github.com/JamieMason/codemods#readme",
   "license": "MIT",
