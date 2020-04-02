@@ -85,6 +85,22 @@ import React from 'react'
 export const Greet = ({ name }) => <span>Hi {name}</span>
 ```
 
+### remove-react-default-props
+
+Remove use of React defaultProps.
+
+```jsx
+/* INPUT */
+import React from 'react'
+
+export const Greet = ({ name }) => <span>Hi {name}</span>
+Greet.defaultProps = { name: 'Stranger' }
+/* OUTPUT */
+import React from 'react'
+
+export const Greet = ({ name }) => <span>Hi {name}</span>
+```
+
 ### sort-jsx-props
 
 Sort props of JSX Components alphabetically.
