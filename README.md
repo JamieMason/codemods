@@ -6,6 +6,21 @@
 [![Follow JamieMason on GitHub](https://img.shields.io/github/followers/JamieMason.svg?style=social&label=Follow)](https://github.com/JamieMason)
 [![Follow fold_left on Twitter](https://img.shields.io/twitter/follow/fold_left.svg?style=social&label=Follow)](https://twitter.com/fold_left)
 
+* [🌩 Installation](#-installation)
+* [🕹 Usage](#-usage)
+* [⚙️ Contributing](#️-contributing)
+* [📝 API](#-api)
+  * [add-react-import](#add-react-import)
+  * [import-from-root](#import-from-root)
+  * [remove-react-prop-types](#remove-react-prop-types)
+  * [remove-react-default-props](#remove-react-default-props)
+  * [sort-jsx-props](#sort-jsx-props)
+  * [sort-object-props](#sort-object-props)
+  * [use-named-exports](#use-named-exports)
+  * [use-named-imports](#use-named-imports)
+* [❓ Quick Intro To Making A Codemod](#-quick-intro-to-making-a-codemod)
+* [🙋🏾‍♀️ Getting Help](#️-getting-help)
+
 ## 🌩 Installation
 
 ```sh
