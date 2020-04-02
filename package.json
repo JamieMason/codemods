@@ -13,20 +13,22 @@
   },
   "homepage": "https://github.com/JamieMason/codemods#readme",
   "license": "MIT",
+  "manager": "yarn",
   "private": true,
   "repository": "JamieMason/codemods",
   "resolutions": {
     "lodash": ">=4.17.15"
   },
   "scripts": {
-    "add-react-import": "jscodeshift --parser flow --extensions js,jsx -t ./transforms/add-react-import.js",
-    "import-from-root": "jscodeshift --parser flow --extensions js,jsx -t ./transforms/import-from-root.js",
-    "remove-react-default-props": "jscodeshift --parser flow --extensions js,jsx -t ./transforms/remove-react-default-props.js",
-    "remove-react-prop-types": "jscodeshift --parser flow --extensions js,jsx -t ./transforms/remove-react-prop-types.js",
-    "sort-jsx-props": "jscodeshift --parser flow --extensions js,jsx -t ./transforms/sort-jsx-props.js",
-    "sort-object-props": "jscodeshift --parser flow --extensions js,jsx -t ./transforms/sort-object-props.js",
+    "add-react-import": "yarn transform ./transforms/add-react-import.js",
+    "import-from-root": "yarn transform ./transforms/import-from-root.js",
+    "remove-react-default-props": "yarn transform ./transforms/remove-react-default-props.js",
+    "remove-react-prop-types": "yarn transform ./transforms/remove-react-prop-types.js",
+    "sort-jsx-props": "yarn transform ./transforms/sort-jsx-props.js",
+    "sort-object-props": "yarn transform ./transforms/sort-object-props.js",
     "test": "jest",
-    "use-named-exports": "jscodeshift --parser flow --extensions js,jsx -t ./transforms/use-named-exports.js",
-    "use-named-imports": "jscodeshift --parser flow --extensions js,jsx -t ./transforms/use-named-imports.js"
+    "transform": "jscodeshift --parser flow --extensions js,jsx -t",
+    "use-named-exports": "yarn transform ./transforms/use-named-exports.js",
+    "use-named-imports": "yarn transform ./transforms/use-named-imports.js"
   }
 }
