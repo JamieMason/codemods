@@ -1,53 +1,53 @@
-const once = fn => {
+const once = (fn) => {
   const lock = { enabled: false };
-  return j => {
+  return (j) => {
     if (lock.enabled) return;
     lock.enabled = true;
     fn(j);
   };
 };
 
-export const extendApi = once(j => {
-  const isTopLevel = path => path.parent.value.type === 'Program';
+export const extendApi = once((j) => {
+  const isTopLevel = (path) => path.parent.value.type === 'Program';
   j.registerMethods({
     getExportsByClassName(className) {
       return this.find(j.ExportNamedDeclaration, {
-        declaration: { type: 'ClassDeclaration', id: { type: 'Identifier', name: className } }
+        declaration: { type: 'ClassDeclaration', id: { type: 'Identifier', name: className } },
       });
     },
     getExportsByFunctionName(className) {
       return this.find(j.ExportNamedDeclaration, {
-        declaration: { type: 'FunctionDeclaration', id: { type: 'Identifier', name: className } }
+        declaration: { type: 'FunctionDeclaration', id: { type: 'Identifier', name: className } },
       });
     },
     getExportsByVarName(varName) {
       return this.find(j.ExportNamedDeclaration, {
         declaration: {
           type: 'VariableDeclaration',
-          declarations: [{ type: 'VariableDeclarator', id: { type: 'Identifier', name: varName } }]
-        }
+          declarations: [{ type: 'VariableDeclarator', id: { type: 'Identifier', name: varName } }],
+        },
       });
     },
     getImportsByPackageName(packageName) {
       return this.find(j.ImportDeclaration, {
         source: {
-          value: packageName
-        }
+          value: packageName,
+        },
       });
     },
     getNamedExportedClasses() {
       return this.find(j.ExportNamedDeclaration, {
-        declaration: { type: 'ClassDeclaration', id: { type: 'Identifier' } }
+        declaration: { type: 'ClassDeclaration', id: { type: 'Identifier' } },
       });
     },
     getNamedExportedFunctions() {
       return this.find(j.ExportNamedDeclaration, {
-        declaration: { type: 'FunctionDeclaration', id: { type: 'Identifier' } }
+        declaration: { type: 'FunctionDeclaration', id: { type: 'Identifier' } },
       });
     },
     getNamedExportedVars() {
       return this.find(j.ExportNamedDeclaration, {
-        declaration: { type: 'VariableDeclaration' }
+        declaration: { type: 'VariableDeclaration' },
       });
     },
     getTopLevelClasses() {
@@ -61,24 +61,24 @@ export const extendApi = once(j => {
     },
     getTopLevelClassByName(className) {
       return this.find(j.ClassDeclaration, {
-        id: { type: 'Identifier', name: className }
+        id: { type: 'Identifier', name: className },
       }).filter(isTopLevel);
     },
     getTopLevelFunctionByName(className) {
       return this.find(j.FunctionDeclaration, {
-        id: { type: 'Identifier', name: className }
+        id: { type: 'Identifier', name: className },
       }).filter(isTopLevel);
     },
     getTopLevelVariableByName(varName) {
       return this.find(j.VariableDeclaration, {
-        declarations: [{ type: 'VariableDeclarator', id: { type: 'Identifier', name: varName } }]
+        declarations: [{ type: 'VariableDeclarator', id: { type: 'Identifier', name: varName } }],
       }).filter(isTopLevel);
     },
     getImportedVarNames() {
       const identifiers = [];
-      this.find(j.ImportDeclaration).forEach(path => {
+      this.find(j.ImportDeclaration).forEach((path) => {
         const importDeclaration = path.value;
-        importDeclaration.specifiers.forEach(specifier => {
+        importDeclaration.specifiers.forEach((specifier) => {
           identifiers.push(specifier.local.name);
         });
       });
@@ -86,7 +86,7 @@ export const extendApi = once(j => {
     },
     getNamedExportedClassNames() {
       const identifiers = [];
-      this.getNamedExportedClasses().forEach(path => {
+      this.getNamedExportedClasses().forEach((path) => {
         const exportNamedDeclaration = path.value;
         identifiers.push(exportNamedDeclaration.declaration.id.name);
       });
@@ -94,7 +94,7 @@ export const extendApi = once(j => {
     },
     getNamedExportedFunctionNames() {
       const identifiers = [];
-      this.getNamedExportedFunctions().forEach(path => {
+      this.getNamedExportedFunctions().forEach((path) => {
         const exportNamedDeclaration = path.value;
         identifiers.push(exportNamedDeclaration.declaration.id.name);
       });
@@ -102,9 +102,9 @@ export const extendApi = once(j => {
     },
     getNamedExportedVarNames() {
       const identifiers = [];
-      this.getNamedExportedVars().forEach(path => {
+      this.getNamedExportedVars().forEach((path) => {
         const exportNamedDeclaration = path.value;
-        exportNamedDeclaration.declaration.declarations.forEach(declaration => {
+        exportNamedDeclaration.declaration.declarations.forEach((declaration) => {
           identifiers.push(declaration.id.name);
         });
       });
@@ -112,7 +112,7 @@ export const extendApi = once(j => {
     },
     getTopLevelClassNames() {
       const identifiers = [];
-      this.getTopLevelClasses().forEach(path => {
+      this.getTopLevelClasses().forEach((path) => {
         const classDeclaration = path.value;
         identifiers.push(classDeclaration.id.name);
       });
@@ -120,7 +120,7 @@ export const extendApi = once(j => {
     },
     getTopLevelFunctionNames() {
       const identifiers = [];
-      this.getTopLevelFunctions().forEach(path => {
+      this.getTopLevelFunctions().forEach((path) => {
         const functionDeclaration = path.value;
         identifiers.push(functionDeclaration.id.name);
       });
@@ -128,9 +128,9 @@ export const extendApi = once(j => {
     },
     getTopLevelVariableNames() {
       const identifiers = [];
-      this.getTopLevelVariables().forEach(path => {
+      this.getTopLevelVariables().forEach((path) => {
         const variableDeclaration = path.value;
-        variableDeclaration.declarations.forEach(declaration => {
+        variableDeclaration.declarations.forEach((declaration) => {
           identifiers.push(declaration.id.name);
         });
       });
@@ -144,26 +144,20 @@ export const extendApi = once(j => {
         this.getNamedExportedVarNames(),
         this.getTopLevelClassNames(),
         this.getTopLevelFunctionNames(),
-        this.getTopLevelVariableNames()
+        this.getTopLevelVariableNames(),
       );
     },
     exportClass(path) {
       const classDeclaration = path.value;
       return j.exportNamedDeclaration(
-        j.classDeclaration(
-          j.identifier(classDeclaration.id.name),
-          classDeclaration.body,
-          classDeclaration.superClass
-        )
+        j.classDeclaration(j.identifier(classDeclaration.id.name), classDeclaration.body, classDeclaration.superClass),
       );
     },
     exportDefaultAsNamed(path, name) {
       const exportDefaultDeclaration = path.value;
       const varName = j.identifier(name);
       const varValue = exportDefaultDeclaration.declaration;
-      return j.exportNamedDeclaration(
-        j.variableDeclaration('const', [j.variableDeclarator(varName, varValue)])
-      );
+      return j.exportNamedDeclaration(j.variableDeclaration('const', [j.variableDeclarator(varName, varValue)]));
     },
     exportVarNameAsDefault(name) {
       return j.exportDefaultDeclaration(j.identifier(name));
@@ -174,15 +168,13 @@ export const extendApi = once(j => {
         j.functionDeclaration(
           j.identifier(functionDeclaration.id.name),
           functionDeclaration.params,
-          functionDeclaration.body
-        )
+          functionDeclaration.body,
+        ),
       );
     },
     exportVariable(path) {
       const variableDeclaration = path.value;
-      return j.exportNamedDeclaration(
-        j.variableDeclaration('const', variableDeclaration.declarations)
-      );
-    }
+      return j.exportNamedDeclaration(j.variableDeclaration('const', variableDeclaration.declarations));
+    },
   });
 });

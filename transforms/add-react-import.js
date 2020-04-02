@@ -5,15 +5,14 @@ export default (file, api) => {
   const containsJsx = root.find(j.JSXIdentifier).length > 0;
 
   const containsReactImport =
-    root
-      .find(j.ImportDeclaration)
-      .filter(importDeclaration => importDeclaration.node.source.value === 'react').length > 0;
+    root.find(j.ImportDeclaration).filter((importDeclaration) => importDeclaration.node.source.value === 'react')
+      .length > 0;
 
   if (containsJsx && !containsReactImport) {
     root
       .get()
       .node.program.body.unshift(
-        j.importDeclaration([j.importDefaultSpecifier(j.identifier('React'))], j.literal('react'))
+        j.importDeclaration([j.importDefaultSpecifier(j.identifier('React'))], j.literal('react')),
       );
   }
 

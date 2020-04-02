@@ -15,7 +15,7 @@ export default (file, api) => {
   const topLevelVarNames = f.getTopLevelVarNames();
   const usesReact = f.getImportsByPackageName('react').length > 0;
   const intendedName = usesReact ? getNameInPascalCase(file) : getNameInCamelCase(file);
-  const caseInsensitiveMatch = name => name.toLowerCase() === intendedName.toLowerCase();
+  const caseInsensitiveMatch = (name) => name.toLowerCase() === intendedName.toLowerCase();
   const existingName = topLevelVarNames.find(caseInsensitiveMatch);
   const nameIsInUse = Boolean(existingName);
   const exportName = existingName || intendedName;
@@ -23,7 +23,7 @@ export default (file, api) => {
   if (!nameIsInUse) {
     return f
       .find(j.ExportDefaultDeclaration)
-      .insertBefore(path => f.exportDefaultAsNamed(path, exportName))
+      .insertBefore((path) => f.exportDefaultAsNamed(path, exportName))
       .replaceWith(() => f.exportVarNameAsDefault(exportName))
       .toSource();
   }

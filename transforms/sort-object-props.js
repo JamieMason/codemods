@@ -1,21 +1,21 @@
 export default (file, api) => {
   const j = api.jscodeshift;
-  const isEvenNumber = number => number % 2 === 0;
-  const isSpreadElement = prop => prop && prop.type === 'SpreadElement';
-  const isValue = prop => prop && prop.type !== 'SpreadElement';
-  const getPropName = prop => (prop.key && (prop.key.name || prop.key.value)) || '';
+  const isEvenNumber = (number) => number % 2 === 0;
+  const isSpreadElement = (prop) => prop && prop.type === 'SpreadElement';
+  const isValue = (prop) => prop && prop.type !== 'SpreadElement';
+  const getPropName = (prop) => (prop.key && (prop.key.name || prop.key.value)) || '';
   const sortByPropName = (a, b) => {
     if (a < b) return -1;
     if (a > b) return 1;
     return 0;
   };
-  const sortProps = props => {
+  const sortProps = (props) => {
     props.sort((a, b) => sortByPropName(getPropName(a), getPropName(b)));
   };
 
   return j(file.source)
     .find(api.jscodeshift.ObjectExpression)
-    .forEach(path => {
+    .forEach((path) => {
       const chunks = [];
       const nextProperties = [];
       const objectExpression = path.value;
