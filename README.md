@@ -68,6 +68,23 @@ import { foo } from "some-package/foo/bar/baz";
 import { foo } from "some-package";
 ```
 
+### remove-react-prop-types
+
+Remove use of React PropTypes.
+
+```jsx
+/* INPUT */
+import React from 'react'
+import PropTypes from 'prop-types'
+
+export const Greet = ({ name }) => <span>Hi {name}</span>
+Greet.propTypes = { name: PropTypes.string }
+/* OUTPUT */
+import React from 'react'
+
+export const Greet = ({ name }) => <span>Hi {name}</span>
+```
+
 ### sort-jsx-props
 
 Sort props of JSX Components alphabetically.
