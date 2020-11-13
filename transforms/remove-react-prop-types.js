@@ -1,14 +1,29 @@
 export default (file, api) => {
   const j = api.jscodeshift;
   const removePath = (path) => j(path).remove();
-  const isAssigningPropTypes = (e) =>
-    e.node.left && e.node.left.property && e.node.left.property.name === 'propTypes';
+
+  // Obj.proptypes = { ... };
+  const isAssigningPropTypes = (e) => e.node.left && e.node.left.property && e.node.left.property.name === 'propTypes';
+
+  // import PropTypes from 'prop-types';
   const isImportingFromPropTypes = (e) => e.node.source && e.node.source.value === 'prop-types';
+
+  // require('prop-types');
   const isRequiringFromPropTypes = (e) =>
     e.node.init &&
     e.node.init.callee &&
     e.node.init.callee.name === 'require' &&
     e.node.init.arguments[0].value === 'prop-types';
+
+  // _defineProperty(obj, 'propTypes', { ... });
+  const isDefiningPropType = (e) =>
+    e.node.expression &&
+    e.node.expression.callee &&
+    e.node.expression.callee.name === '_defineProperty' &&
+    e.node.expression.arguments &&
+    e.node.expression.arguments[1] &&
+    e.node.expression.arguments[1].original &&
+    e.node.expression.arguments[1].original.value === 'propTypes';
 
   const withoutAssignment = j(file.source)
     .find(j.AssignmentExpression)
@@ -28,5 +43,11 @@ export default (file, api) => {
     .forEach(removePath)
     .toSource();
 
-  return withoutRequire;
+  const withoutDefineProperty = j(withoutRequire)
+    .find(j.ExpressionStatement)
+    .filter(isDefiningPropType)
+    .forEach(removePath)
+    .toSource();
+
+  return withoutDefineProperty;
 };
