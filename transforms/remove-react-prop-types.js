@@ -25,6 +25,10 @@ export default (file, api) => {
     e.node.expression.arguments[1].original &&
     e.node.expression.arguments[1].original.value === 'propTypes';
 
+  // { propTypes: { foo: PropTypes.string } };
+  const isObjectProperty = (e) =>
+    e.node.key && e.node.key.name === 'propTypes' && e.node.value && e.node.value.type === 'ObjectExpression';
+
   const withoutAssignment = j(file.source)
     .find(j.AssignmentExpression)
     .filter(isAssigningPropTypes)
@@ -49,5 +53,11 @@ export default (file, api) => {
     .forEach(removePath)
     .toSource();
 
-  return withoutDefineProperty;
+  const withoutObjectProperty = j(withoutDefineProperty)
+    .find(j.Property)
+    .filter(isObjectProperty)
+    .forEach(removePath)
+    .toSource();
+
+  return withoutObjectProperty;
 };
