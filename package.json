@@ -27,7 +27,7 @@
     "sort-jsx-props": "yarn transform ./transforms/sort-jsx-props.js",
     "sort-object-props": "yarn transform ./transforms/sort-object-props.js",
     "test": "jest",
-    "transform": "jscodeshift --parser flow --extensions js,jsx -t",
+    "transform": "jscodeshift --parser flow --extensions js,jsx,ts,tsx -t",
     "use-named-exports": "yarn transform ./transforms/use-named-exports.js",
     "use-named-imports": "yarn transform ./transforms/use-named-imports.js"
   }
