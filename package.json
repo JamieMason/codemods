@@ -5,11 +5,11 @@
   "author": "Jamie Mason <jamie@foldleft.io> (https://github.com/JamieMason)",
   "bugs": "https://github.com/JamieMason/codemods/issues",
   "dependencies": {
-    "jscodeshift": "0.11.0"
+    "jscodeshift": "0.13.0"
   },
   "devDependencies": {
     "babel-preset-env": "1.7.0",
-    "jest": "25.1.0"
+    "jest": "27.4.5"
   },
   "homepage": "https://github.com/JamieMason/codemods#readme",
   "license": "MIT",
@@ -27,7 +27,7 @@
     "sort-jsx-props": "yarn transform ./transforms/sort-jsx-props.js",
     "sort-object-props": "yarn transform ./transforms/sort-object-props.js",
     "test": "jest",
-    "transform": "jscodeshift --parser tsx --extensions js,jsx,ts,tsx -t",
+    "transform": "node ./node_modules/.bin/jscodeshift --parser tsx --ignore-pattern '**/node_modules/**' --extensions js,jsx,ts,tsx -t",
     "use-named-exports": "yarn transform ./transforms/use-named-exports.js",
     "use-named-imports": "yarn transform ./transforms/use-named-imports.js",
     "use-string-literal-props": "yarn transform ./transforms/use-string-literal-props.js"
