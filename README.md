@@ -10,6 +10,7 @@
 * [🕹 Usage](#-usage)
 * [⚙️ Contributing](#️-contributing)
 * [📝 API](#-api)
+  * [use-string-literal-props](#use-string-literal-props)
   * [add-react-import](#add-react-import)
   * [import-from-root](#import-from-root)
   * [remove-react-prop-types](#remove-react-prop-types)
@@ -53,6 +54,30 @@ corresponding expected output alongside it at
 All fixtures are discovered and tested when running `yarn test`.
 
 ## 📝 API
+
+### use-string-literal-props
+
+Convert JSX props which are expressions for a string literal, into just a string literal.
+
+```jsx
+/* INPUT */
+const SomeComponent = () => (
+  <AnotherComponent
+    foo={'string'}
+    label={`template with 0 substitutions`}
+    whatever={`template with ${1} substitution`}
+  />
+);
+
+/* OUTPUT */
+const SomeComponent = () => (
+  <AnotherComponent
+    foo="string"
+    label="template with 0 substitutions"
+    whatever={`template with ${1} substitution`}
+  />
+);
+```
 
 ### add-react-import
 
