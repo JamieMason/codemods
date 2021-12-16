@@ -1,7 +1,7 @@
 {
   "name": "codemods",
   "description": "Transforms for use with JSCodeshift",
-  "version": "0.9.1",
+  "version": "0.15.2",
   "author": "Jamie Mason <jamie@foldleft.io> (https://github.com/JamieMason)",
   "bugs": "https://github.com/JamieMason/codemods/issues",
   "dependencies": {

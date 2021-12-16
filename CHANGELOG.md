@@ -1,3 +1,26 @@
+## [0.15.2](https://github.com/JamieMason/codemods/compare/0.9.1...0.15.2) (2021-12-16)
+
+### Bug Fixes
+
+- **react:** handle when react is imported without default
+  ([c94ab27](https://github.com/JamieMason/codemods/commit/c94ab27c09ab507093922891bcd0bdf8bf1b58ef))
+
+### Features
+
+- **parser:** switch from flow to tsx
+  ([9f80087](https://github.com/JamieMason/codemods/commit/9f80087f5c7b56763edd1a01ca262aa6b0a734d3))
+- **react:** remove propTypes set as properties
+  ([78d53e9](https://github.com/JamieMason/codemods/commit/78d53e977d292588031553b323dc740491424a33)),
+  closes [#12](https://github.com/JamieMason/codemods/issues/12)
+- **react:** remove propTypes set via \_defineProperty
+  ([6d3a514](https://github.com/JamieMason/codemods/commit/6d3a514386651e3db7200e2acf40bb2eb40fa7b2))
+- **react:** remove use of react defaultProps
+  ([e5afbb9](https://github.com/JamieMason/codemods/commit/e5afbb94cf4f5290574f59b297b1470046e9415a))
+- **react:** remove use of react PropTypes
+  ([970c459](https://github.com/JamieMason/codemods/commit/970c4598f7371efd620c025464841873b8d56822))
+- **typescript:** process typescript files
+  ([f5db971](https://github.com/JamieMason/codemods/commit/f5db9719111473789f75273b06dc1e1187b6b938))
+
 ## [0.9.1](https://github.com/JamieMason/codemods/compare/0.8.1...0.9.1) (2020-03-11)
 
 ### Features
