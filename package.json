@@ -29,6 +29,7 @@
     "test": "jest",
     "transform": "jscodeshift --parser tsx --extensions js,jsx,ts,tsx -t",
     "use-named-exports": "yarn transform ./transforms/use-named-exports.js",
-    "use-named-imports": "yarn transform ./transforms/use-named-imports.js"
+    "use-named-imports": "yarn transform ./transforms/use-named-imports.js",
+    "use-string-literal-props": "yarn transform ./transforms/use-string-literal-props.js"
   }
 }
