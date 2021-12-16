@@ -1,3 +1,15 @@
+## [0.16.3](https://github.com/JamieMason/codemods/compare/0.15.2...0.16.3) (2021-12-16)
+
+### Bug Fixes
+
+- **npm:** update jscodeshift
+  ([51d238f](https://github.com/JamieMason/codemods/commit/51d238f0528997dcda1461a76da68079969306c8))
+
+### Features
+
+- **react:** convert string expression props to literals
+  ([fe35134](https://github.com/JamieMason/codemods/commit/fe3513458c660e1e4bb8939b7d504c2b27d62de7))
+
 ## [0.15.2](https://github.com/JamieMason/codemods/compare/0.9.1...0.15.2) (2021-12-16)
 
 ### Bug Fixes
