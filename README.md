@@ -195,6 +195,22 @@ import masthead from "@sky-uk/koa-masthead";
 import { masthead } from "@sky-uk/koa-masthead";
 ```
 
+### remove-default-object
+
+Break apart a default export of an object, which you can be left with after having run `$ lebab -t commonjs`.
+
+```js
+/* INPUT */
+export default {
+  foo: async (req, res) => {},
+  bar: async (req, res) => {},
+}
+
+/* OUTPUT */
+export async function foo (req, res) {}
+export async function bar (req, res) {}
+```
+
 ## ❓ Quick Intro To Making A Codemod
 
 1. Open [ASTExplorer][astexplorer] with the Parser set to `esprima` and
