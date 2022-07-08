@@ -4,14 +4,12 @@ export default (file, api) => {
   const getDefaultImport = (importDeclaration) => importDeclaration.specifiers.find(isDefaultImport);
   const hasDefaultImport = (importDeclaration) => Boolean(getDefaultImport(importDeclaration));
   const isRelativeImport = (importDeclaration) => importDeclaration.source.value.startsWith('.');
-  const isScriptImport = (importDeclaration) =>
-    !['.json', '.md', '.css', '.svg'].some((ext) => importDeclaration.source.value.endsWith(ext));
+  const isAbsoluteImport = (importDeclaration) => importDeclaration.source.value.startsWith('~');
 
   return j(file.source)
     .find(j.ImportDeclaration)
     .filter((path) => hasDefaultImport(path.value))
-    .filter((path) => isRelativeImport(path.value))
-    .filter((path) => isScriptImport(path.value))
+    .filter((path) => isRelativeImport(path.value) || isAbsoluteImport(path.value))
     .forEach((path) => {
       const importDeclaration = path.value;
       importDeclaration.specifiers = importDeclaration.specifiers.map((specifier) => {

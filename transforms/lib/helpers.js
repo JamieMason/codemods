@@ -162,6 +162,9 @@ export const extendApi = once((j) => {
     exportVarNameAsDefault(name) {
       return j.exportDefaultDeclaration(j.identifier(name));
     },
+    removeDefaultExport() {
+      return this.find(j.ExportDefaultDeclaration).replaceWith('');
+    },
     exportFunction(path) {
       const functionDeclaration = path.value;
       return j.exportNamedDeclaration(

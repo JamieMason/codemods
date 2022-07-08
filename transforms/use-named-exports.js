@@ -15,7 +15,7 @@ export default (file, api) => {
   const topLevelVarNames = f.getTopLevelVarNames();
   const usesReact = f.getImportsByPackageName('react').length > 0;
   const intendedName = usesReact ? getNameInPascalCase(file) : getNameInCamelCase(file);
-  const caseInsensitiveMatch = (name) => name.toLowerCase() === intendedName.toLowerCase();
+  const caseInsensitiveMatch = (name) => name?.toLowerCase() === intendedName?.toLowerCase();
   const existingName = topLevelVarNames.find(caseInsensitiveMatch);
   const nameIsInUse = Boolean(existingName);
   const exportName = existingName || intendedName;
@@ -24,7 +24,7 @@ export default (file, api) => {
     return f
       .find(j.ExportDefaultDeclaration)
       .insertBefore((path) => f.exportDefaultAsNamed(path, exportName))
-      .replaceWith(() => f.exportVarNameAsDefault(exportName))
+      .replaceWith('')
       .toSource();
   }
 
@@ -52,16 +52,23 @@ export default (file, api) => {
 
   if (matchingClass.length > 0) {
     console.log(`%s has a class called %s which is not exported`, file.path, exportName);
-    return matchingClass.replaceWith(() => f.exportClass(matchingClass.get())).toSource();
+    matchingClass.replaceWith(() => f.exportClass(matchingClass.get()));
+
+    return f.removeDefaultExport().toSource();
   }
 
   if (matchingFunction.length > 0) {
     console.log(`%s has a function called %s which is not exported`, file.path, exportName);
-    return matchingFunction.replaceWith(() => f.exportFunction(matchingFunction.get())).toSource();
+    matchingFunction.replaceWith(() => f.exportFunction(matchingFunction.get()));
+
+    return f.removeDefaultExport().toSource();
   }
 
   if (matchingVariable.length > 0) {
     console.log(`%s has a variable called %s which is not exported`, file.path, exportName);
-    return matchingVariable.replaceWith(() => f.exportVariable(matchingVariable.get())).toSource();
+
+    matchingVariable.replaceWith(() => f.exportVariable(matchingVariable.get()));
+
+    return f.removeDefaultExport().toSource();
   }
 };
