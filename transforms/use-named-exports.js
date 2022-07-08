@@ -71,4 +71,39 @@ export default (file, api) => {
 
     return f.removeDefaultExport().toSource();
   }
+
+  if (nameIsInUse) {
+    let importReplaced = false;
+
+    f.find(j.ExportDefaultDeclaration)
+      .insertBefore((path) => f.exportDefaultAsNamed(path, exportName))
+      .replaceWith('');
+
+    f.find(j.ImportDeclaration).forEach((path) => {
+      const importDeclaration = path.value;
+
+      importDeclaration.specifiers = importDeclaration.specifiers.map((specifier) => {
+        if (
+          specifier.local.name.toLowerCase() === intendedName.toLowerCase() &&
+          importDeclaration.source.value.startsWith('@dhl')
+        ) {
+          importReplaced = true;
+          return j.importSpecifier(j.identifier(`${intendedName} as Dhl${intendedName}`));
+        } else {
+          return specifier;
+        }
+      });
+    });
+
+    if (importReplaced) {
+      f.find(j.JSXIdentifier)
+        .filter((path) => path.value.name.toLowerCase() === intendedName.toLowerCase())
+        .forEach((path) => {
+          const declaration = path.value;
+          declaration.name = `Dhl${intendedName}`;
+        });
+    }
+
+    return f.toSource();
+  }
 };
