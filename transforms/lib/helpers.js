@@ -35,6 +35,22 @@ export const extendApi = once((j) => {
         },
       });
     },
+    addImportToPackageName(packageName, importName) {
+      return this.find(j.ImportDeclaration, {
+        source: {
+          value: packageName,
+        },
+      }).forEach((path) => {
+        const importDeclaration = path.value;
+
+        importDeclaration.specifiers = [
+          ...importDeclaration.specifiers.filter(
+            (specifier) => !specifier.local || specifier.local.name !== importName,
+          ),
+          j.importSpecifier(j.identifier(importName)),
+        ];
+      });
+    },
     getNamedExportedClasses() {
       return this.find(j.ExportNamedDeclaration, {
         declaration: { type: 'ClassDeclaration', id: { type: 'Identifier' } },
@@ -178,6 +194,11 @@ export const extendApi = once((j) => {
     exportVariable(path) {
       const variableDeclaration = path.value;
       return j.exportNamedDeclaration(j.variableDeclaration('const', variableDeclaration.declarations));
+    },
+    renameJSXElements(oldName, newName) {
+      this.find(j.JSXIdentifier, { name: oldName }).forEach((path) => {
+        path.value.name = newName;
+      });
     },
   });
 });

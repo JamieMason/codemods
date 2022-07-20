@@ -1,4 +1,3 @@
-import { getNameInCamelCase, getNameInPascalCase } from './lib/file';
 import { extendApi } from './lib/helpers';
 
 export default (file, api) => {
@@ -7,7 +6,6 @@ export default (file, api) => {
 
   extendApi(j);
 
-  const topLevelVarNames = f.getTopLevelVarNames();
   const reactRouterImports = f.getImportsByPackageName('react-router-dom');
   const usesReactRouter = reactRouterImports.length > 0;
 
@@ -21,6 +19,8 @@ export default (file, api) => {
     Redirect: 'Navigate',
     useHistory: 'useNavigate',
   };
+
+  const routeComponentProperties = ['history', 'location', 'match'];
 
   reactRouterImports.forEach((path) => {
     const importDeclaration = path.value;
@@ -36,6 +36,69 @@ export default (file, api) => {
         return specifier;
       });
   });
+
+  let propsTypeName = '';
+  let useParamsTypeParam = undefined;
+
+  f.find(j.TSTypeAliasDeclaration, {
+    typeAnnotation: {
+      typeName: {
+        name: 'RouteComponentProps',
+      },
+    },
+  }).forEach((path) => {
+    const declaration = path.value;
+
+    propsTypeName = path.value.id.name;
+    useParamsTypeParam = declaration.typeAnnotation.typeParameters;
+  });
+
+  f.find(j.ArrowFunctionExpression)
+    .filter((path) => path.value.params[0] && path.value.params[0].type === 'ObjectPattern')
+    .filter(
+      (path) =>
+        path.value.params[0].typeAnnotation &&
+        path.value.params[0].typeAnnotation.typeAnnotation &&
+        path.value.params[0].typeAnnotation.typeAnnotation.typeName &&
+        path.value.params[0].typeAnnotation.typeAnnotation.typeName.name === propsTypeName,
+    )
+    .forEach((path) => {
+      const value = path.value;
+
+      if (useParamsTypeParam) {
+        const useParamsDeclaration = j.variableDeclaration('const', [
+          j.variableDeclarator(j.identifier('params'), j.callExpression(j.identifier('useParams'), [])),
+        ]);
+
+        useParamsDeclaration.declarations[0].init.typeParameters = useParamsTypeParam;
+
+        value.body.body = [useParamsDeclaration, ...value.body.body];
+
+        f.addImportToPackageName('react-router-dom', 'useParams');
+      }
+
+      const historyProp = path.value.params[0].properties.find((p) => p.key.name === 'history');
+
+      if (historyProp) {
+        const useNavigateDeclaration = j.variableDeclaration('const', [
+          j.variableDeclarator(j.identifier('navigate'), j.callExpression(j.identifier('useNavigate'), [])),
+        ]);
+        value.body.body = [useNavigateDeclaration, ...value.body.body];
+        f.addImportToPackageName('react-router-dom', 'useNavigate');
+      }
+
+      const matchProp = path.value.params[0].properties.find((p) => p.key.name === 'match');
+
+      if (matchProp) {
+        console.log(matchProp.value.properties[0].value);
+      }
+
+      value.params[0].properties = value.params[0].properties.filter((p) => routeComponentProperties.includes(p.key));
+
+      if (value.params[0].properties.length === 0) {
+        value.params = [];
+      }
+    });
 
   f.renameJSXElements('Switch', 'Routes');
   f.renameJSXElements('Redirect', 'Navigate');
@@ -165,93 +228,4 @@ export default (file, api) => {
   }
 
   return f.toSource();
-
-  /*
-  if (!nameIsInUse) {
-    return f
-      .find(j.ExportDefaultDeclaration)
-      .insertBefore((path) => f.exportDefaultAsNamed(path, exportName))
-      .replaceWith('')
-      .toSource();
-  }
-
-  const classExportOfName = f.getExportsByClassName(exportName);
-  const functionExportOfName = f.getExportsByFunctionName(exportName);
-  const namedExportOfName = f.getExportsByVarName(exportName);
-  const matchingClass = f.getTopLevelClassByName(exportName);
-  const matchingFunction = f.getTopLevelFunctionByName(exportName);
-  const matchingVariable = f.getTopLevelVariableByName(exportName);
-
-  if (classExportOfName.length > 0) {
-    console.log(`%s already exports a class called %s`, file.path, exportName);
-    return;
-  }
-
-  if (functionExportOfName.length > 0) {
-    console.log(`%s already exports a function called %s`, file.path, exportName);
-    return;
-  }
-
-  if (namedExportOfName.length > 0) {
-    console.log(`%s already exports a const called %s`, file.path, exportName);
-    return;
-  }
-
-  if (matchingClass.length > 0) {
-    console.log(`%s has a class called %s which is not exported`, file.path, exportName);
-    matchingClass.replaceWith(() => f.exportClass(matchingClass.get()));
-
-    return f.removeDefaultExport().toSource();
-  }
-
-  if (matchingFunction.length > 0) {
-    console.log(`%s has a function called %s which is not exported`, file.path, exportName);
-    matchingFunction.replaceWith(() => f.exportFunction(matchingFunction.get()));
-
-    return f.removeDefaultExport().toSource();
-  }
-
-  if (matchingVariable.length > 0) {
-    console.log(`%s has a variable called %s which is not exported`, file.path, exportName);
-
-    matchingVariable.replaceWith(() => f.exportVariable(matchingVariable.get()));
-
-    return f.removeDefaultExport().toSource();
-  }
-
-  if (nameIsInUse) {
-    let importReplaced = false;
-
-    f.find(j.ExportDefaultDeclaration)
-      .insertBefore((path) => f.exportDefaultAsNamed(path, exportName))
-      .replaceWith('');
-
-    f.find(j.ImportDeclaration).forEach((path) => {
-      const importDeclaration = path.value;
-
-      importDeclaration.specifiers = importDeclaration.specifiers.map((specifier) => {
-        if (
-          specifier.local.name.toLowerCase() === intendedName.toLowerCase() &&
-          importDeclaration.source.value.startsWith('@dhl')
-        ) {
-          importReplaced = true;
-          return j.importSpecifier(j.identifier(`${intendedName} as Dhl${intendedName}`));
-        } else {
-          return specifier;
-        }
-      });
-    });
-
-    if (importReplaced) {
-      f.find(j.JSXIdentifier)
-        .filter((path) => path.value.name.toLowerCase() === intendedName.toLowerCase())
-        .forEach((path) => {
-          const declaration = path.value;
-          declaration.name = `Dhl${intendedName}`;
-        });
-    }
-
-    return f.toSource();
-  }
-  */
 };
