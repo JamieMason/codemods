@@ -37,6 +37,12 @@ export default (file, api) => {
       });
   });
 
+  /*
+   * When a component uses RouteComponentProps as the base for its Prop type, attempt to migrate it
+   * to using the respective useLocation and useParams hooks. This mod will try to construct useParams
+   * in such a way that it uses the same object destructuring as was used in `match` of RouteComponentProps.
+   * The custom props type based on RouteComponentProps and props passed to component will be removed.
+   */
   let propsTypeName = '';
   let useParamsTypeParam = undefined;
 
@@ -51,54 +57,86 @@ export default (file, api) => {
 
     propsTypeName = path.value.id.name;
     useParamsTypeParam = declaration.typeAnnotation.typeParameters;
+
+    j(path).remove();
   });
 
-  f.find(j.ArrowFunctionExpression)
-    .filter((path) => path.value.params[0] && path.value.params[0].type === 'ObjectPattern')
+  const objectPatternUsingRouteComponentPropsType = (value) =>
+    value.params[0] &&
+    value.params[0].type === 'ObjectPattern' &&
+    value.params[0]?.typeAnnotation?.typeAnnotation?.typeName?.name === (propsTypeName || 'RouteComponentProps');
+
+  const convertArrowFunctionExpression = (value) => {
+    if (useParamsTypeParam) {
+      const matchProp = value.params[0].properties.find((p) => p.key.name === 'match');
+      let objectBinding = undefined;
+
+      if (matchProp && matchProp.value.properties) {
+        objectBinding = matchProp.value.properties[0].value;
+      } else if (matchProp && !matchProp.value.properties) {
+        f.find(j.MemberExpression, {
+          object: {
+            name: 'match',
+          },
+        }).replaceWith((path) => path.value.property);
+      }
+
+      const declaration = objectBinding ? objectBinding : j.identifier('params');
+
+      const useParamsDeclaration = j.variableDeclaration('const', [
+        j.variableDeclarator(declaration, j.callExpression(j.identifier('useParams'), [])),
+      ]);
+
+      useParamsDeclaration.declarations[0].init.typeParameters = useParamsTypeParam;
+
+      value.body.body = [useParamsDeclaration, ...value.body.body];
+
+      f.addImportToPackageName('react-router-dom', 'useParams');
+    }
+
+    const historyProp = value.params[0].properties.find((p) => p.key.name === 'history');
+
+    if (historyProp) {
+      const useNavigateDeclaration = j.variableDeclaration('const', [
+        j.variableDeclarator(j.identifier('navigate'), j.callExpression(j.identifier('useNavigate'), [])),
+      ]);
+      value.body.body = [useNavigateDeclaration, ...value.body.body];
+      f.addImportToPackageName('react-router-dom', 'useNavigate');
+    }
+
+    const locationProp = value.params[0].properties.find((p) => p.key.name === 'location');
+
+    if (locationProp) {
+      const useLocationDeclaration = j.variableDeclaration('const', [
+        j.variableDeclarator(j.identifier('location'), j.callExpression(j.identifier('useLocation'), [])),
+      ]);
+      value.body.body = [useLocationDeclaration, ...value.body.body];
+      f.addImportToPackageName('react-router-dom', 'useLocation');
+    }
+
+    value.params[0].properties = value.params[0].properties.filter((p) => routeComponentProperties.includes(p.key));
+
+    if (value.params[0].properties.length === 0) {
+      value.params = [];
+    }
+  };
+
+  f.find(j.VariableDeclaration)
     .filter(
       (path) =>
-        path.value.params[0].typeAnnotation &&
-        path.value.params[0].typeAnnotation.typeAnnotation &&
-        path.value.params[0].typeAnnotation.typeAnnotation.typeName &&
-        path.value.params[0].typeAnnotation.typeAnnotation.typeName.name === propsTypeName,
+        propsTypeName &&
+        path.value.declarations[0]?.id?.typeAnnotation?.typeAnnotation?.typeParameters?.params[0]?.typeName?.name ===
+          propsTypeName,
     )
-    .forEach((path) => {
+    .forEach((path, i) => {
       const value = path.value;
-
-      if (useParamsTypeParam) {
-        const useParamsDeclaration = j.variableDeclaration('const', [
-          j.variableDeclarator(j.identifier('params'), j.callExpression(j.identifier('useParams'), [])),
-        ]);
-
-        useParamsDeclaration.declarations[0].init.typeParameters = useParamsTypeParam;
-
-        value.body.body = [useParamsDeclaration, ...value.body.body];
-
-        f.addImportToPackageName('react-router-dom', 'useParams');
-      }
-
-      const historyProp = path.value.params[0].properties.find((p) => p.key.name === 'history');
-
-      if (historyProp) {
-        const useNavigateDeclaration = j.variableDeclaration('const', [
-          j.variableDeclarator(j.identifier('navigate'), j.callExpression(j.identifier('useNavigate'), [])),
-        ]);
-        value.body.body = [useNavigateDeclaration, ...value.body.body];
-        f.addImportToPackageName('react-router-dom', 'useNavigate');
-      }
-
-      const matchProp = path.value.params[0].properties.find((p) => p.key.name === 'match');
-
-      if (matchProp) {
-        console.log(matchProp.value.properties[0].value);
-      }
-
-      value.params[0].properties = value.params[0].properties.filter((p) => routeComponentProperties.includes(p.key));
-
-      if (value.params[0].properties.length === 0) {
-        value.params = [];
-      }
+      convertArrowFunctionExpression(value.declarations[0].init);
+      value.declarations[0].id.typeAnnotation.typeAnnotation.typeParameters = undefined;
     });
+
+  f.find(j.ArrowFunctionExpression)
+    .filter((path) => objectPatternUsingRouteComponentPropsType(path.value))
+    .forEach((path) => convertArrowFunctionExpression(path.value));
 
   f.renameJSXElements('Switch', 'Routes');
   f.renameJSXElements('Redirect', 'Navigate');
@@ -111,6 +149,7 @@ export default (file, api) => {
 
   const wrapWithExpressionContainer = (element) => j.jsxExpressionContainer(j.jsxElement(element));
 
+  // Convert component and children attributes on Route to element attribute.
   f.find(j.JSXElement)
     .filter((path) => path.value.openingElement.name.name === 'Route')
     .forEach((path) => {
@@ -209,7 +248,6 @@ export default (file, api) => {
     if (routesNamedExport.length > 0) {
       f.find(j.ImportDeclaration).forEach((path) => {
         const importDeclaration = path.value;
-        //console.log(importDeclaration.specifiers)
 
         const routesImport = importDeclaration.specifiers.find((s) => s.imported && s.imported.name === 'Routes');
 
