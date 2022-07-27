@@ -26,7 +26,7 @@ export default (file, api) => {
     const importDeclaration = path.value;
 
     importDeclaration.specifiers = importDeclaration.specifiers
-      .filter((specifier) => !['RouteComponentProps'].includes(specifier.local.name))
+      .filter((specifier) => !['RouteComponentProps', 'RouteChildrenProps'].includes(specifier.local.name))
       .map((specifier) => {
         const newImportName = renamedImportsMap[specifier.local.name];
         if (newImportName) {
@@ -64,34 +64,58 @@ export default (file, api) => {
   const objectPatternUsingRouteComponentPropsType = (value) =>
     value.params[0] &&
     value.params[0].type === 'ObjectPattern' &&
-    value.params[0]?.typeAnnotation?.typeAnnotation?.typeName?.name === (propsTypeName || 'RouteComponentProps');
+    [propsTypeName, 'RouteComponentProps', 'RouteChildrenProps'].includes(
+      value.params[0]?.typeAnnotation?.typeAnnotation?.typeName?.name,
+    );
 
   const convertArrowFunctionExpression = (value) => {
-    if (useParamsTypeParam) {
-      const matchProp = value.params[0].properties.find((p) => p.key.name === 'match');
+    const conditionallyConvertToBlockStatement = () => {
+      if (!value.body.body) {
+        // convert to block statement
+        value.body = j.blockStatement([j.returnStatement(value.body)]);
+      }
+    };
+
+    useParamsTypeParam = useParamsTypeParam || value.params[0]?.typeAnnotation?.typeAnnotation.typeParameters;
+
+    const matchProp = value.params[0].properties.find((p) => p.key.name === 'match');
+
+    if (useParamsTypeParam || matchProp) {
       let objectBinding = undefined;
+      let addUseParam = false;
 
       if (matchProp && matchProp.value.properties) {
         objectBinding = matchProp.value.properties[0].value;
+        addUseParam = true;
       } else if (matchProp && !matchProp.value.properties) {
         f.find(j.MemberExpression, {
           object: {
             name: 'match',
           },
-        }).replaceWith((path) => path.value.property);
+          property: {
+            name: 'params',
+          },
+        }).replaceWith((path) => {
+          addUseParam = true;
+          return path.value.property;
+        });
       }
 
-      const declaration = objectBinding ? objectBinding : j.identifier('params');
+      if (addUseParam) {
+        const declaration = objectBinding ? objectBinding : j.identifier('params');
 
-      const useParamsDeclaration = j.variableDeclaration('const', [
-        j.variableDeclarator(declaration, j.callExpression(j.identifier('useParams'), [])),
-      ]);
+        const useParamsDeclaration = j.variableDeclaration('const', [
+          j.variableDeclarator(declaration, j.callExpression(j.identifier('useParams'), [])),
+        ]);
 
-      useParamsDeclaration.declarations[0].init.typeParameters = useParamsTypeParam;
+        useParamsDeclaration.declarations[0].init.typeParameters = useParamsTypeParam;
 
-      value.body.body = [useParamsDeclaration, ...value.body.body];
+        conditionallyConvertToBlockStatement();
+        value.body.body = [useParamsDeclaration, ...value.body.body];
 
-      f.addImportToPackageName('react-router-dom', 'useParams');
+        f.addImportToPackageName('react-router-dom', 'useParams');
+      }
+    } else {
     }
 
     const historyProp = value.params[0].properties.find((p) => p.key.name === 'history');
@@ -100,6 +124,8 @@ export default (file, api) => {
       const useNavigateDeclaration = j.variableDeclaration('const', [
         j.variableDeclarator(j.identifier('navigate'), j.callExpression(j.identifier('useNavigate'), [])),
       ]);
+
+      conditionallyConvertToBlockStatement();
       value.body.body = [useNavigateDeclaration, ...value.body.body];
       f.addImportToPackageName('react-router-dom', 'useNavigate');
     }
@@ -110,6 +136,8 @@ export default (file, api) => {
       const useLocationDeclaration = j.variableDeclaration('const', [
         j.variableDeclarator(j.identifier('location'), j.callExpression(j.identifier('useLocation'), [])),
       ]);
+
+      conditionallyConvertToBlockStatement();
       value.body.body = [useLocationDeclaration, ...value.body.body];
       f.addImportToPackageName('react-router-dom', 'useLocation');
     }
@@ -153,8 +181,8 @@ export default (file, api) => {
   f.find(j.JSXElement)
     .filter((path) => path.value.openingElement.name.name === 'Route')
     .forEach((path) => {
-      const componentAttribute = path.value.openingElement.attributes.find((a) => a.name.name === 'component');
-      const childrenAttribute = path.value.openingElement.attributes.find((a) => a.name.name === 'children');
+      const componentAttribute = path.value.openingElement.attributes.find((a) => a.name?.name === 'component');
+      const childrenAttribute = path.value.openingElement.attributes.find((a) => a.name?.name === 'children');
       if (componentAttribute) {
         componentAttribute.name = 'element';
         if (componentAttribute.value.expression.type === 'Identifier') {
@@ -184,7 +212,7 @@ export default (file, api) => {
       }
 
       path.value.openingElement.attributes = path.value.openingElement.attributes.filter(
-        (a) => !['exact'].includes(a.name.name),
+        (a) => !['exact', 'strict'].includes(a.name?.name),
       );
     });
 
