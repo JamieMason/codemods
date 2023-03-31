@@ -51,7 +51,7 @@ adding example input files at
 corresponding expected output alongside it at
 `./test/fixtures/<transform-name>/<scenario-name>.output.js`.
 
-All fixtures are discovered and tested when running `yarn test`.
+All fixtures are discovered and tested when running `yarn test`
 
 ## 📝 API
 
