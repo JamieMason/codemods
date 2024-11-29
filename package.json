@@ -5,7 +5,7 @@
   "author": "Jamie Mason <jamie@foldleft.io> (https://github.com/JamieMason)",
   "bugs": "https://github.com/JamieMason/codemods/issues",
   "dependencies": {
-    "jscodeshift": "0.13.0"
+    "jscodeshift": "17.1.1"
   },
   "devDependencies": {
     "babel-preset-env": "1.7.0",
@@ -13,23 +13,20 @@
   },
   "homepage": "https://github.com/JamieMason/codemods#readme",
   "license": "MIT",
-  "manager": "yarn",
+  "manager": "npm",
   "private": true,
   "repository": "JamieMason/codemods",
-  "resolutions": {
-    "lodash": ">=4.17.15"
-  },
   "scripts": {
-    "add-react-import": "yarn transform ./transforms/add-react-import.js",
-    "import-from-root": "yarn transform ./transforms/import-from-root.js",
-    "remove-react-default-props": "yarn transform ./transforms/remove-react-default-props.js",
-    "remove-react-prop-types": "yarn transform ./transforms/remove-react-prop-types.js",
-    "sort-jsx-props": "yarn transform ./transforms/sort-jsx-props.js",
-    "sort-object-props": "yarn transform ./transforms/sort-object-props.js",
+    "add-react-import": "npm run transform -- ./transforms/add-react-import.js",
+    "import-from-root": "npm run transform -- ./transforms/import-from-root.js",
+    "remove-react-default-props": "npm run transform -- ./transforms/remove-react-default-props.js",
+    "remove-react-prop-types": "npm run transform -- ./transforms/remove-react-prop-types.js",
+    "sort-jsx-props": "npm run transform -- ./transforms/sort-jsx-props.js",
+    "sort-object-props": "npm run transform -- ./transforms/sort-object-props.js",
     "test": "jest",
-    "transform": "node ./node_modules/.bin/jscodeshift --parser tsx --ignore-pattern '**/node_modules/**' --extensions js,jsx,ts,tsx -t",
-    "use-named-exports": "yarn transform ./transforms/use-named-exports.js",
-    "use-named-imports": "yarn transform ./transforms/use-named-imports.js",
-    "use-string-literal-props": "yarn transform ./transforms/use-string-literal-props.js"
+    "transform": "npm exec jscodeshift -- --parser tsx --ignore-pattern '**/node_modules/**' --extensions js,jsx,ts,tsx -t",
+    "use-named-exports": "npm run transform -- ./transforms/use-named-exports.js",
+    "use-named-imports": "npm run transform -- ./transforms/use-named-imports.js",
+    "use-string-literal-props": "npm run transform -- ./transforms/use-string-literal-props.js"
   }
 }
