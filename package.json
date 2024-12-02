@@ -21,6 +21,8 @@
     "import-from-root": "npm run transform -- ./transforms/import-from-root.js",
     "remove-react-default-props": "npm run transform -- ./transforms/remove-react-default-props.js",
     "remove-react-prop-types": "npm run transform -- ./transforms/remove-react-prop-types.js",
+    "icons": "npm run transform -- ./transforms/icons.js",
+    "icon-with-theme": "npm run transform -- ./transforms/icon-with-theme.js",
     "sort-jsx-props": "npm run transform -- ./transforms/sort-jsx-props.js",
     "sort-object-props": "npm run transform -- ./transforms/sort-object-props.js",
     "test": "jest",
