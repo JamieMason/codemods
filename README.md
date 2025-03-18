@@ -13,6 +13,7 @@
   * [use-string-literal-props](#use-string-literal-props)
   * [add-react-import](#add-react-import)
   * [import-from-root](#import-from-root)
+  * [move-children-prop](#move-children-prop)
   * [remove-react-prop-types](#remove-react-prop-types)
   * [remove-react-default-props](#remove-react-default-props)
   * [sort-jsx-props](#sort-jsx-props)
@@ -106,6 +107,18 @@ import { foo } from "some-package/foo/bar/baz";
 
 /* OUTPUT */
 import { foo } from "some-package";
+```
+
+### move-children-prop
+
+Use the common syntax for react children
+
+```js
+/* INPUT */
+<Foo children="wat" />
+
+/* OUTPUT */
+<Foo>wat</Foo>
 ```
 
 ### remove-react-prop-types

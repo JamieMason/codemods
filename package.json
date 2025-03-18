@@ -19,6 +19,7 @@
   "scripts": {
     "add-react-import": "npm run transform -- ./transforms/add-react-import.js",
     "import-from-root": "npm run transform -- ./transforms/import-from-root.js",
+    "move-children-prop": "npm run transform -- ./transforms/move-children-prop.js",
     "remove-react-default-props": "npm run transform -- ./transforms/remove-react-default-props.js",
     "remove-react-prop-types": "npm run transform -- ./transforms/remove-react-prop-types.js",
     "sort-jsx-props": "npm run transform -- ./transforms/sort-jsx-props.js",
