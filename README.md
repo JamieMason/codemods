@@ -10,6 +10,9 @@
 * [🕹 Usage](#-usage)
 * [⚙️ Contributing](#️-contributing)
 * [📝 API](#-api)
+  * [gather-re-exports](#gather-re-exports)
+  * [import-from-origin](#import-from-origin)
+  * [remove-re-exports](#remove-re-exports)
   * [use-string-literal-props](#use-string-literal-props)
   * [add-react-import](#add-react-import)
   * [import-from-root](#import-from-root)
@@ -55,6 +58,30 @@ corresponding expected output alongside it at
 All fixtures are discovered and tested when running `yarn test`.
 
 ## 📝 API
+
+### gather-re-exports
+
+Analyze source files to identify barrel files and create a manifest of re-exported symbols. This manifest is used by the other barrel file removal commands.
+
+```bash
+yarn gather-re-exports <path-to-source> --manifest <path-to-manifest.json>
+```
+
+### import-from-origin
+
+Transform imports from barrel files to import directly from their original source files using the manifest created by `gather-re-exports`.
+
+```bash
+yarn import-from-origin <path-to-source> --manifest <path-to-manifest.json>
+```
+
+### remove-re-exports
+
+Remove re-export declarations from barrel files and clean up unused imports using the manifest created by `gather-re-exports`.
+
+```bash
+yarn remove-re-exports <path-to-source> --manifest <path-to-manifest.json>
+```
 
 ### use-string-literal-props
 

@@ -16,9 +16,9 @@ global.testTransform = (name, { filePath = fakePath, options = {} } = {}) => {
     }
 
     fs.readdirSync(fixturesPath)
-      .filter(filename => filename.endsWith('.input.js'))
-      .map(filename => filename.replace('.input.js', ''))
-      .forEach(id => {
+      .filter((filename) => filename.endsWith('.input.js'))
+      .map((filename) => filename.replace('.input.js', ''))
+      .forEach((id) => {
         const inputPath = `${fixturesPath}/${id}.input.js`;
         const outputPath = `${fixturesPath}/${id}.output.js`;
         const displayPath = path.relative(root, inputPath);
@@ -28,12 +28,7 @@ global.testTransform = (name, { filePath = fakePath, options = {} } = {}) => {
           const input = fs.readFileSync(inputPath, 'utf8');
           const expectedOutput = fs.readFileSync(outputPath, 'utf8');
           jest.spyOn(console, 'log').mockImplementation(() => {});
-          testUtils.runInlineTest(
-            transform,
-            options,
-            { path: filePath, source: input },
-            expectedOutput
-          );
+          testUtils.runInlineTest(transform, options, { path: filePath, source: input }, expectedOutput);
           jest.restoreAllMocks();
         });
       });

@@ -8,8 +8,8 @@ const path = require('path');
 // ./test/fixtures/<transform-name>/<scenario-name>.output.js
 
 fs.readdirSync(path.resolve(__dirname, '../transforms'))
-  .filter(filename => filename.endsWith('.js'))
-  .map(filename => filename.replace('.js', ''))
-  .forEach(transformName => {
+  .filter((filename) => filename.endsWith('.js'))
+  .map((filename) => filename.replace('.js', ''))
+  .forEach((transformName) => {
     testTransform(transformName);
   });
