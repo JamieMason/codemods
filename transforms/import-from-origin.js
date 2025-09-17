@@ -2,11 +2,13 @@ const nodePath = require('path');
 const fs = require('fs');
 
 let manifest = null;
+let globalTransformCount = 0;
 
 export default (file, api, options) => {
   const j = api.jscodeshift;
   const root = j(file.source);
   const pathToManifest = options.manifest;
+  const limit = options.limit ? parseInt(options.limit, 10) : null;
 
   if (!manifest) {
     const absolutePathToManifest = nodePath.resolve(pathToManifest);
@@ -153,11 +155,52 @@ export default (file, api, options) => {
 
   // Transform the imports if we found any barrel file imports
   if (barrelImports.length > 0) {
-    console.log(`Transforming ${barrelImports.length} barrel file imports in ${currentFileAbsolute}`);
+    // When limit is set, skip files that contain re-exports (they are barrel files themselves)
+    if (limit) {
+      // Check if the current file is in the manifest (meaning it contains re-exports)
+      // Convert current file path to the same format as manifest keys
+      const currentFileForManifest = (() => {
+        const parsed = nodePath.parse(currentFileAbsolute);
+        const withoutExtension = nodePath.join(parsed.dir, parsed.name);
+        // If the file is named "index", Node.js resolution points to the directory
+        if (parsed.name === 'index') {
+          return parsed.dir;
+        }
+        return withoutExtension;
+      })();
+
+      if (manifest.hasOwnProperty(currentFileForManifest)) {
+        console.log(`Skipping ${currentFileAbsolute} (contains re-exports, would transform ${barrelImports.length} imports)`);
+        return root.toSource();
+      }
+    }
+
+    // Check if we've reached the limit
+    if (limit && globalTransformCount >= limit) {
+      console.log(`Limit of ${limit} imports reached. Skipping ${currentFileAbsolute} (would transform ${barrelImports.length} imports)`);
+      return root.toSource();
+    }
+
+    // Calculate how many imports we can actually transform
+    let importsToTransform = barrelImports;
+    if (limit) {
+      const remainingLimit = limit - globalTransformCount;
+      if (remainingLimit < barrelImports.length) {
+        importsToTransform = barrelImports.slice(0, remainingLimit);
+        console.log(`Transforming ${importsToTransform.length} of ${barrelImports.length} barrel file imports in ${currentFileAbsolute} (limit: ${limit})`);
+      } else {
+        console.log(`Transforming ${barrelImports.length} barrel file imports in ${currentFileAbsolute} (${globalTransformCount + barrelImports.length}/${limit})`);
+      }
+    } else {
+      console.log(`Transforming ${barrelImports.length} barrel file imports in ${currentFileAbsolute}`);
+    }
+
+    // Update the global count
+    globalTransformCount += importsToTransform.length;
 
     // Group barrel imports by their original source path to avoid duplicate imports
     const importsByOriginalPath = {};
-    barrelImports.forEach(({ symbolName, originalPath, exportType, originalName, localName }) => {
+    importsToTransform.forEach(({ symbolName, originalPath, exportType, originalName, localName }) => {
       if (!importsByOriginalPath[originalPath]) {
         importsByOriginalPath[originalPath] = {
           namedImports: [],
@@ -285,7 +328,7 @@ export default (file, api, options) => {
 
     // Remove symbols from barrel file imports
     const barrelSymbolsToRemove = {};
-    barrelImports.forEach(({ symbolName, barrelPath }) => {
+    importsToTransform.forEach(({ symbolName, barrelPath }) => {
       if (!barrelSymbolsToRemove[barrelPath]) {
         barrelSymbolsToRemove[barrelPath] = new Set();
       }

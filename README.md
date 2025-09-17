@@ -72,8 +72,10 @@ yarn gather-re-exports <path-to-source> --manifest <path-to-manifest.json>
 Transform imports from barrel files to import directly from their original source files using the manifest created by `gather-re-exports`.
 
 ```bash
-yarn import-from-origin <path-to-source> --manifest <path-to-manifest.json>
+yarn import-from-origin <path-to-source> --manifest <path-to-manifest.json> [--limit <number>]
 ```
+
+The `--limit` option allows you to limit the number of imports that will be transformed, useful for creating manageable pull requests.
 
 ### remove-re-exports
 

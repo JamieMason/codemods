@@ -21,7 +21,7 @@
     "import-from-root": "npm run transform -- -t ./transforms/import-from-root.js",
     "move-children-prop": "npm run transform -- -t ./transforms/move-children-prop.js",
     "gather-re-exports": "npm run transform -- --run-in-band -t ./transforms/gather-re-exports.js",
-    "import-from-origin": "npm run transform -- -t ./transforms/import-from-origin.js",
+    "import-from-origin": "npm run transform -- --run-in-band -t ./transforms/import-from-origin.js",
     "remove-re-exports": "npm run transform -- -t ./transforms/remove-re-exports.js",
     "remove-react-default-props": "npm run transform -- -t ./transforms/remove-react-default-props.js",
     "remove-react-prop-types": "npm run transform -- -t ./transforms/remove-react-prop-types.js",
